@@ -1,0 +1,39 @@
+name: Acquire NASA POWER pilot data
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: Start date (YYYYMMDD)
+        required: true
+        default: "20150101"
+      end_date:
+        description: End date (YYYYMMDD)
+        required: true
+        default: "20251231"
+
+permissions:
+  contents: write
+
+jobs:
+  download-power:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download NASA POWER daily observations
+        run: |
+          python scripts/download_nasa_power.py \
+            --start "${{ inputs.start_date }}" \
+            --end "${{ inputs.end_date }}"
+      - name: Commit downloaded CSV
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nasasets/raw/nasa_power/nasa_power_beni_mellal_daily.csv
+          git commit -m "Add NASA POWER daily data for Beni Mellal" || echo "No data changes"
+          git push
