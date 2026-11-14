@@ -1,0 +1,11 @@
+# Large source archives and generated rasters stay outside ordinary Git history.
+/raw/*
+!/raw/.gitkeep
+/processed/*
+!/processed/.gitkeep
+
+# Local credentials and temporary download artifacts
+.env
+*.part
+*.tmp
+*.log
